@@ -1,0 +1,701 @@
+/* 開発者ツールを使っているみなさんへ!こんにちは！
+以下のコードはCSSになっています。必ずコードを書くごとに説明を記載してください。 */
+/* 表！*/
+
+th {
+  background: #60d483;
+  border: solid 1px #ccc;
+  color: #fff;
+  padding: 10px;
+}
+td {
+  border: solid 1px #ccc;
+  padding: 10px;
+  font-size: 13px;
+}
+
+@media screen and (max-width: 640px) {
+  .scroll {
+    overflow-x: auto;
+  }
+  .tble {
+    width: 90%;
+  }
+  .tble tr {
+    display: block;
+    float: left;
+  }
+  .tble tr td, 
+  .tble tr th {
+    border-left: none;
+    display: block;
+    height: 50px;
+  }
+  .tble thead {
+    display: block;
+    float: left;
+    width: 30%;
+  }
+  .tble thead tr {
+    width: 100%;
+  }
+  .tble tbody {
+    display: block;
+    float: left;
+    width: 70%;
+  }
+  .tble tbody tr {
+    width: 50%;
+  }
+  .tble tr td + td {
+    border-left: none;
+  }
+  .tble tbody td:last-child {
+    border-bottom: solid 1px #ccc;
+  }
+  .tbl-r07 {
+      min-width: 640px;
+      margin: 0 10px 50px;
+  }
+  .tbl-r07 td {
+      border-top: solid 1px #ccc;
+      border-bottom: solid 1px #ccc;
+    }
+  }
+
+
+/* 部活動の企画詳細 */
+.waku {
+  margin-top: 15px;
+  padding: 7px;
+  border: solid 1px silver;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.club_diary_article_img {
+  height: auto;
+  border-radius: 4px;
+}
+.tag{
+    display: inline-block;
+    margin: 0 .1em .6em 0 !important;;
+    padding: .6em !important;;
+    line-height: 1 !important;;
+    text-decoration: none !important;;
+    color: #18bd70 !important;;
+    background-color: #fff !important;;
+    border: 1px solid #18bd70 !important;;
+    border-radius: 2em;
+
+  }
+  .ue{
+    font-size: 24px;
+    font-weight:bold;
+    
+  }
+  .dt{
+    display: inline-block;
+    margin: 0 .1em .6em 0 !important;;
+    padding: .6em !important;;
+    line-height: 1 !important;;
+    text-decoration: none !important;;
+    color: #18bd70 !important;;
+    background-color: #fff !important;;
+    border: 1px solid #18bd70 !important;;
+    border-radius: 2em;
+  }
+.twitter__container{
+  display: inline-block;
+  justify-content: center;
+
+}
+.out2_club_diary {
+  width: 100%;
+  padding: 0;
+  margin: 0 auto;
+}
+.out_club_diary {
+  width: 90vw;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.club_diary {
+  display: block;
+  padding: 0;
+  margin: 20px;
+}
+/*============================
+body style
+============================*/
+body {
+  margin: 0;
+}
+/*============================
+header style
+============================*/
+#top-head {
+  width: 100%;
+  height: 60px;
+  background: #fff;
+  opacity: 0.9;
+  display: flex;
+  position: fixed;
+  z-index: 999;
+}
+#top-head .inner {
+  float: left;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/*logo style*/
+.inner h3 a {
+  color: #20b2aa;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13pt;
+}
+/*nav style*/
+#top-head nav ul {
+  display: flex;
+  list-style-type: none;
+}
+/*nav link style*/
+#top-head nav ul li a {
+  color: #404040;
+  font-size: 10pt;
+  padding: 7px;
+}
+#top-head nav ul li a:hover {
+  color: #20b2aa;
+
+}
+#nav_toggle {
+  display: none;
+}
+/*============================
+mobile style
+============================*/
+@media screen and (max-width:680px) {
+/*hamburger menu style*/
+  #nav_toggle {
+    display: block;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    top: 4px;
+    z-index: 100;
+  }
+  #nav_toggle div {
+    position: relative;
+  }
+/*hamburger menu close style*/
+  #nav_toggle span {
+    display: block;
+    height: 2px;
+    background: #404040;
+    position:absolute;
+    width: 100%;
+    left: 0;
+    -webkit-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+    transition: 0.5s ease-in-out;
+  }
+  #nav_toggle span:nth-child(1) {
+    top:0px;
+  }
+  #nav_toggle span:nth-child(2) {
+    top:10px;
+  }
+  #nav_toggle span:nth-child(3) {
+    top:20px;
+  }
+/*hamburger menu open style*/
+  .open #nav_toggle span:nth-child(1) {
+    top: 10px;
+    -webkit-transform: rotate(135deg);
+    -moz-transform: rotate(135deg);
+    transform: rotate(135deg);
+  }
+  .open #nav_toggle span:nth-child(2) {
+    width: 0;
+    left: 50%;
+  }
+  .open #nav_toggle span:nth-child(3) {
+    top: 10px;
+    -webkit-transform: rotate(-135deg);
+    -moz-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+  }
+/*nav style*/
+  #top-head nav {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: 1040px;
+    background: #fff;
+    z-index: 999;
+  }
+  #top-head nav ul {
+    display: block;
+    width: 80%;
+  }
+  #top-head nav ul li {
+    text-align: center;
+    border-bottom: 1px solid #dcdcdc;
+  }
+  #top-head nav ul li:last-child {
+    border: none;
+  }
+/*nav link style*/
+  #top-head nav ul li a {
+    display: block;
+  }
+}
+
+
+
+/*ナビゲーションバーロゴ調整 */
+.navbar-brand img{
+    width: 200px;
+    height: 40px;
+
+}
+
+/*ポスター画像保存禁止設定・大きさ設定 */
+.poster{
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+/*桜アニメーション */
+.sakura {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+}
+
+
+.sakura h1 {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 5rem;
+  color: #fff;
+  z-index: 0;
+}
+
+.sakura li{
+  position: absolute;
+  list-style: none;
+  top: -50px;
+  background: #ffdbed;
+  border-radius: 0% 70%;  
+  animation: fall 4s linear infinite, sway 2s ease-in-out infinite alternate;
+  position:fixed;
+}
+/*文化祭説明*/
+.cardpan{
+  display:flex;
+  justify-content: center;
+  width: auto;
+ }
+.btn{
+  justify-content: center;
+}
+
+@media only screen and (max-width: 1279px){
+.cardpan 
+    max-width: 1200px;
+    padding: 0;
+}
+
+@keyframes fall {
+  to {
+    top: 120%;
+  }
+}
+
+@keyframes sway1 {
+  from {
+    transform: translateX(0px) rotate(0deg);
+  }
+  to {
+    transform: translateX(200px) rotate(-45deg);
+  }
+}
+
+@keyframes sway2 {
+  from {
+    transform: translateX(200px) rotate(-45deg);
+  }
+  to {
+    transform: translateX(0px) rotate(0deg);
+  }
+}
+
+.sakura li:nth-child(1){
+  left: 0%;
+  width: 24px;
+  height: 15px;
+  animation: fall 10s linear infinite,
+             sway1 3s ease-in-out infinite alternate;
+  animation-delay: 2s;
+}
+
+.sakura li:nth-child(2){
+  left: 5%;
+  width: 13px;
+  height: 9px;
+  animation: fall 15s linear infinite,
+             sway1 2s ease-in-out infinite alternate;
+  animation-delay: 8s;
+}
+
+.sakura li:nth-child(3){
+  left: 15%;
+  width: 16px;
+  height: 10px;
+  animation: fall 9s linear infinite,
+             sway1 3.5s ease-in-out infinite alternate;
+  animation-delay: 13s;
+}
+
+.sakura li:nth-child(4){
+  left: 30%;
+  width: 16px;
+  height: 10px;
+  animation: fall 8s linear infinite,
+             sway2 4s ease-in-out infinite alternate;
+  animation-delay: 7s;
+}
+.sakura li:nth-child(5){
+  left: 40%;
+  width: 16px;
+  height: 10px;
+  animation: fall 10s linear infinite,
+             sway1 4s ease-in-out infinite alternate;
+  animation-delay: 0s;
+}
+.sakura li:nth-child(6){
+  left: 55%;
+  width: 24px;
+  height: 15px;
+  animation: fall 11s linear infinite,
+             sway2 3s ease-in-out infinite alternate;
+  animation-delay: 3s;
+}
+.sakura li:nth-child(7){
+  left: 65%;
+  width: 16px;
+  height: 10px;
+  animation: fall 7s linear infinite,
+             sway2 3.5s ease-in-out infinite alternate;
+  animation-delay: 7s;
+}
+.sakura li:nth-child(8){
+  left: 50%;
+  width: 13px;
+  height: 9px;
+  animation: fall 7s linear infinite,
+             sway1 3s ease-in-out infinite alternate;
+  animation-delay: 3s;
+}
+.sakura li:nth-child(9){
+  left: 80%;
+  width: 16px;
+  height: 10px;
+  animation: fall 10s linear infinite,
+             sway2 4s ease-in-out infinite alternate;
+  animation-delay: 4s;
+}
+/*ここまでが桜のアニメーション */
+
+.poster img {
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+  z-index: -10;
+
+  /* これを追加して画像禁止設定 */
+    pointer-events: none;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-touch-callout:none;
+    -moz-user-select:none;
+    touch-action:none;
+    user-select:none;
+}
+
+ /*あいさつ文 */
+.aisatu-settings {
+  font-size: 40px;
+  text-align: center;
+  font-family: serif;
+}
+.aisatu-settings p {
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  font-size: 2vw;
+  padding-left: 2vw;
+  flex-wrap: wrap;
+}
+ /*タイトル設定 */
+.title1 {
+  text-align: center;
+  font-size: 30pt;
+
+}
+.title2 {
+  text-align: center;
+  font-size: 30pt;
+
+}
+.title3 {
+  text-align: center;
+  font-size: 20pt;
+
+}
+.footer {
+  color: #808080;
+  background: #e5e5e5;
+  text-align: center;
+  padding: 30px;
+ }
+ .footer a {
+  color: #808080;
+  text-decoration: none;
+ }
+ .footer a:hover {
+  text-decoration: underline;
+ }
+ .footer .menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+ }
+ .footer .menu li {
+  margin: 0;
+  padding: 0 20px;
+ }
+ .footer .copyright {
+  margin: 0;
+  padding: 20px 0 0 0;
+ }
+
+.topPageNewsList {
+    max-width: 1240px;
+/*-- スマホ版表示CSS  --*/
+}
+.tab{
+  padding: 40px;
+}
+@charset "UTF-8";
+/*Twitterの画面*/
+.box{
+  border: 2px solid #0094D6;
+  border-radius: 10px;
+  
+}
+.box h3{
+  background: #0094D6;
+  color: #FFF;
+  text-align: center;
+  margin: 0;
+}
+.box .inner{
+  padding: .5em;
+}
+.keikoku{
+  padding:20px
+}
+.twitter__container {
+  padding: 0;
+  background: #ffffff;
+  overflow: hidden;
+  max-width: 400px;
+  font-size: 80%;
+  border: solid 1px #eeeeee;
+  display: inline-block;
+  text-align: left;
+}
+.twitter__contents{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.twitter__container a {
+  color: #58aeed;
+}
+
+/* ヘッダー部分 */
+.twitter__container .twitter__title {
+  background: #58aeed;
+  padding: 10px;
+  text-align: center;
+  font-size: 150%;
+  color: #ffffff;
+}
+
+.twitter__container .twitter__title .twitter-logo {
+  margin: 0 auto;
+  width: 20px;
+  height: 20px;
+  display: block;
+  background: url(svg/twitter-logo.svg) center no-repeat;
+}
+
+.twitter__container .twitter__title span {
+  font-size: 20px;
+}
+
+/* タイムライン部分 */
+.twitter__container .twitter__contents {
+  overflow: hidden;
+  position: relative;
+  line-height: 165%;
+}
+
+.twitter__container .twitter__contents.scroll {
+  height: 500px;
+  overflow-y: scroll;
+}
+
+.twitter__container .twitter__block {
+  width: 100%;
+  display: block;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-bottom: solid 1px #eeeeee;
+  overflow: hidden;
+}
+
+.twitter__container .twitter__block:last-child {
+  border-bottom: solid 0px;
+}
+/* アイコンの詳細 */
+.twitter__container .twitter__block figure {
+  width: 50px;
+  padding: 0;
+  margin: 0;
+  float: left;
+  width: 50px;
+}
+  /* 正方形 */
+.twitter__container .twitter__block figure img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+/* コメント */
+.twitter__container .twitter__block-text {
+  margin: 0;
+  position: relative;
+  margin-left: 60px;
+  padding-right: 10px;
+}
+
+.twitter__container .twitter__block-text .name {
+  font-weight: bold;
+}
+
+.twitter__container .twitter__block-text .name .name_reply {
+  color: #8a9aa4;
+  margin-left: 10px;
+}
+
+.twitter__container .twitter__block-text .date {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  text-align: right;
+  color: #8a9aa4;
+}
+/* 本文 */
+.twitter__container .twitter__block-text .text {
+  margin: 5px 0;
+}
+/* 画像を貼る場合 */
+.twitter__container .twitter__block-text .text .in-pict img {
+  border-radius: 5px;
+  pointer-events: none;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-touch-callout:none;
+  -moz-user-select:none;
+  touch-action:none;
+  user-select:none;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  margin: 3px 0;
+  width: 90%;
+  height: auto;;
+  object-fit: cover;
+}
+
+/*詳細設定 */
+
+.twitter__container .twitter__icon br{
+  display: none;
+}
+
+.twitter__container .twitter__icon .twitter-bubble {
+  width: 14px;
+  height: 14px;
+  display: block;
+  padding-left: 20px;
+  background: url("svg/twitter-bubble.svg") left no-repeat;
+  width: 20%;
+  float: left;
+  color: #8a9aa4;
+}
+
+.twitter__container .twitter__icon .twitter-heart {
+  width: 14px;
+  height: 14px;
+  display: block;
+  padding-left: 20px;
+  background: url("svg/twitter-heart.svg") left no-repeat;
+  width: 20%;
+  float: left;
+  color: #8a9aa4;
+}
+
+.twitter__container .twitter__icon .twitter-loop {
+  width: 14px;
+  height: 14px;
+  display: block;
+  padding-left: 20px;
+  background: url("svg/twitter-loop.svg") left no-repeat;
+  width: 20%;
+  float: left;
+  color: #8a9aa4;
+}
+
+.youtube {
+  padding-right: 50px;
+  text-align: center;
+/*Tシャツ */
+}
