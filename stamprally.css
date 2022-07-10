@@ -1,0 +1,6 @@
+.p {
+    padding: 0.5em;/*文字周りの余白*/
+    color: #494949;/*文字色*/
+    background: #b6dfbf;/*背景色*/
+    border-left: solid 5px #32c062;/*左線（実線 太さ 色）*/
+  }
