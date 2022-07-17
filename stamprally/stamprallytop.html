@@ -1,272 +1,921 @@
 <!DOCTYPE html>
 <html lang="ja" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-<!-- 読み込み -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="../css/style.css" rel="stylesheet">
-<!-- ナビゲーションバー -->
-<body>  
-  <header id="top-head">
-    <div class="inner">
-      <h3><a href="../../index.html">明実祭・明高祭2022</a></h3>
-      <div id="nav_toggle">
-        <div>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="../../index.html">TOPページ</a></li>
-          <li><a href="speak.html">挨拶</a></li>
-          <li><a href="postercontest.html">ポスターコンテスト応募作品</a></li>
-          <li><a href="Tshirt.html">クラスTシャツ</a></li>
-          <li><a href="ivent.html">企画・イベント情報</a></li>
-          <li><a href="iroart.html">「彩」アート</a></li>
-          <li><a href="movie.html">各企画CM</a></li>
-        </ul>
-      </nav>
-    </div>
+
+<head>
+  <meta charset="utf-8">
+  <title>【スタンプラリー】
+  </title>
+  <!-- 読み込み -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="https://serratus.github.io/quaggaJS/examples/js/quagga.min.js"></script>
+  <link href="../../css/style.css" rel="stylesheet">
+  <link href="../navigation/nav.css" rel="stylesheet">
+  <!-- ナビゲーションバー -->
+  <header>
+    <iframe class="PC" src="../navigation/header.html" class="upheader" frameborder="0" style="border: none"
+      width="100%"></iframe>
   </header>
-<script type="text/javascript" src="main.js"></script>
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="../../main.js"></script>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
-    <!-- cssリンク -->
+  <!-- モバイルナビゲーションバー -->
+  <header>
+    <iframe class="Mobile" src="../navigation/header.html" class="upheader" frameborder="0" style="border: none"
+      width="100%" height="350px"></iframe>
+  </header>
+  <script type="text/javascript" src="main.js"></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+  <script src="../../main.js"></script>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>[HTML5] QRCode Reader</title>
+    <style>
+      /* 全体のレイアウト調整 */
+      #contents { display:flex; width:650px;}
+      #camera, #picture, #result { justify-content:center; margin:5px;}
+  
+      /* リーダー部分 */
+      #picture { display:none; }
+      #result { border: 1px solid gray; width:300px; height:200px; padding:10px;}
+      small { color:gray; }
+    </style>
+  </head>
   <body>
-    <center>
+  
+  <h1>QRCode Reader</h1>
+  
+  <section id="contents">
+    <!-- カメラ映像 -->
+    <video id="camera" width="300" height="200" muted></video>
+  
+    <!-- 処理用 -->
+    <canvas id="picture" width="300" height="200"></canvas>
+  
+    <!-- 読み取り結果 -->
+    <div id="result">
+      <small>※ここに読み取り結果が表示されます※</small>
+    </div>
+  </section>
+  
+  <script src="jsQR.js"></script>
+  <script>
+  const video  = $("#camera");     // === document.querySelector("#camera");
+  const canvas = $("#picture");    // === document.querySelector("#picture");
+  const ctx = canvas.getContext("2d");
+  
+  window.onload = () => {
+    /** カメラ設定 */
+    const constraints = {
+      audio: false,
+      video: {
+        width: 300,
+        height: 200,
+        facingMode: "user"   // フロントカメラを利用する
+      }
+    };
+  
+    /**
+     * カメラを<video>と同期
+     */
+     navigator.mediaDevices.getUserMedia(constraints)
+    .then( (stream) => {
+      video.srcObject = stream;
+      video.onloadedmetadata = (e) => {
+        video.play();
+  
+        // QRコードのチェック開始
+        checkPicture();
+      };
+    })
+    .catch( (err) => {
+      console.log(err.name + ": " + err.message);
+    });
+  };
+  
+  /**
+   * QRコードの読み取り
+   */
+  function checkPicture(){
+    // カメラの映像をCanvasに複写
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    // QRコードの読み取り
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+  
+    //----------------------
+    // 存在する場合
+    //----------------------
+    if( code ){
+      // 結果を表示
+      setQRResult("#result", code.data);  // 文字列
+      drawLine(ctx, code.location);       // 見つかった箇所に線を引く
+  
+      // video と canvas を入れ替え
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+      video.pause();
+    }
+    //----------------------
+    // 存在しない場合
+    //----------------------
+    else{
+      // 0.3秒後にもう一度チェックする
+      setTimeout( () => {
+        checkPicture();
+      }, 300);
+    }
+  }
+  
+  
+  /**
+   * 発見されたQRコードに線を引く
+   *
+   * @param {Object} ctx
+   * @param {Object} pos
+   * @param {Object} options
+   * @return {void}
+   */
+  function drawLine(ctx, pos, options={color:"blue", size:5}){
+    // 線のスタイル設定
+    ctx.strokeStyle = options.color;
+    ctx.lineWidth   = options.size;
+  
+    // 線を描く
+    ctx.beginPath();
+    ctx.moveTo(pos.topLeftCorner.x, pos.topLeftCorner.y);         // 左上からスタート
+    ctx.lineTo(pos.topRightCorner.x, pos.topRightCorner.y);       // 右上
+    ctx.lineTo(pos.bottomRightCorner.x, pos.bottomRightCorner.y); // 右下
+    ctx.lineTo(pos.bottomLeftCorner.x, pos.bottomLeftCorner.y);   // 左下
+    ctx.lineTo(pos.topLeftCorner.x, pos.topLeftCorner.y);         // 左上に戻る
+    ctx.stroke();
+  }
+  
+  /**
+   * QRコードの読み取り結果を表示する
+   *
+   * @param {String} id
+   * @param {String} data
+   * @return {void}
+   */
+  function setQRResult(id, data){
+    $(id).innerHTML = escapeHTML(data);
+  }
+  
+  /**
+   * jQuery style wrapper
+   *
+   * @param {string} selector
+   * @return {Object}
+   */
+   function $(selector){
+    return( document.querySelector(selector) );
+  }
+  
+  /**
+   * HTML表示用に文字列をエスケープする
+   *
+   * @param {string} str
+   * @return {string}
+   */
+  function escapeHTML(str){
+    let result = "";
+    result = str.replace("&", "&amp;");
+    result = str.replace("'", "&#x27;");
+    result = str.replace("`", "&#x60;");
+    result = str.replace('"', "&quot;");
+    result = str.replace("<", "&lt;");
+    result = str.replace(">", "&gt;");
+    result = str.replace(/\n/, "<br>");
+  
+    return(result);
+  }
+  </script>
+  </body>
+  </html>
+<script>
+
+    //スタンプラリー書き込み処理
+    //1stamp
+    function No1() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name1=stamp1';
+        console.log("stamp1を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No2() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name2=stamp2';
+        console.log("stamp2を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No3() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name3=stamp3';
+        console.log("stamp3を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No4() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name4=stamp4';
+        console.log("stamp4を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No5() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name5=stamp5';
+        console.log("stamp5を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No6() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name6=stamp6';
+        console.log("stamp6を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No7() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name7=stamp7';
+        console.log("stamp7を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No8() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name8=stamp8';
+        console.log("stamp8を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No9() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name9=stamp9';
+        console.log("stamp9を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No10() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name9=stamp9';
+        console.log("stamp10を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    //1stamp
+    function No11() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name11=stamp11';
+        console.log("stamp11を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No12() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name12=stamp12';
+        console.log("stamp12を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No13() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name13=stamp13';
+        console.log("stamp13を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No14() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name14=stamp14';
+        console.log("stamp4を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No15() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name15=stamp15';
+        console.log("stamp5を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No16() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name16=stamp16';
+        console.log("stamp6を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No17() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name17=stamp17';
+        console.log("stamp17を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No18() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name18=stamp18';
+        console.log("stamp18を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No19() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name19=stamp19';
+        console.log("stamp19を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+
+    }
+    function No20() {
+
+      if (navigator.cookieEnabled) {
+        document.cookie = 'name20=stamp20';
+        console.log("stamp20を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No21() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name21=stamp21';
+        console.log("stamp21を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No22() {
+
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name22=stamp22';
+        console.log("stamp22を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No23() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name23=stamp23';
+        console.log("stamp23を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No24() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name24=stamp24';
+        console.log("stamp24を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No25() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name25=stamp25';
+        console.log("stamp25を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No26() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name26=stamp26';
+        console.log("stamp26を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No27() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name27=stamp27';
+        console.log("stamp27を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No28() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name28=stamp28';
+        console.log("stamp28を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No29() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name29=stamp29';
+        console.log("stamp29を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No30() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name30=stamp30';
+        console.log("stamp30を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No31() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name31=stamp31';
+        console.log("stamp31を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No32() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name32=stamp32';
+        console.log("stamp32を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No33() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name33=stamp33';
+        console.log("stamp33を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No34() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name34=stamp34';
+        console.log("stamp34を記録");
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No35() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name35=stamp35';
+        console.log("stamp35を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+    function No36() {
+      if (navigator.cookieEnabled) {
+
+        document.cookie = 'name36=stamp36';
+        console.log("stamp36を記録");
+
+      } else {
+        alert(" あれれ...？　\n cookieが許可されてないみたいだよ! \n cookieを許可してからもういっかい試してね! ");
+      }
+    }
+
+
+    Quagga.init({
+      inputStream: { type: 'LiveStream' },
+      decoder: {
+        readers: [{
+          format: 'ean_reader',
+          config: {}
+        }]
+      }
+    }, (err) => {
+      if (!err) {
+        Quagga.start();
+      }
+    });
+    Quagga.onDetected((result) => {
+      var code = result.codeResult.code;
+      alert("QRコードを読み取りましたー正常なコードの場合は、ページが更新されます。")
+
+      //1番目のスタンプラリー
+      if (code.match('114514810454')) {
+        No1()
+        document.location.reload();
+      }
+    });
+
+  </script>
+  </body>
+
+<body>
+  <center>
     <a href="../../index.html" target="_blank" rel="noopener noreferrer" class="topp">
       TOP PAGE
     </a>
+
   </center>
   <style>
-  .topp {
-    top: 2vw;
-    left: 2vw;
-    padding: 10px;
-    background: #6bc256;/*ボタン色*/
-    color: #FFF;
-    border-bottom: solid 4px #62956a;
-    border-radius: 3px;
-  }
-  
-  .topp:active {
-    /*ボタンを押したとき*/
-    -webkit-transform: translateY(4px);
-    transform: translateY(4px);/*下に動く*/
-    border-bottom: none;/*線を消す*/
-  }</style>
+    .topp {
+      top: 2vw;
+      left: 2vw;
+      padding: 10px;
+      background: #6bc256;
+      /*ボタン色*/
+      color: #FFF;
+      border-bottom: solid 4px #62956a;
+      border-radius: 3px;
+    }
+
+    .topp:active {
+      /*ボタンを押したとき*/
+      -webkit-transform: translateY(4px);
+      transform: translateY(4px);
+      /*下に動く*/
+      border-bottom: none;
+      /*線を消す*/
+    }
+  </style>
   <br>
-    <title>スタンプラリー</title>
-    <div><b><p id="goukei" class="goukei">現在のスタンプ数！！<p></div></b>
+  <title>スタンプラリー</title>
+  <div><b>
+      <p id="goukei" class="goukei">現在のスタンプ数！！
+      <p>
+  </div></b>
 
 
-    <table class="stamp">
-      <tr>
-        <td>
-          <!-- stamp1 -->
-          <img id="istamp1" class="stamp1 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp2 -->
-          <img id="istamp2" class="stamp2 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp3 -->
-          <img id="istamp3" class="stamp3 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp4 -->
-          <img id="istamp4" class="stamp4 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp5 -->
-          <img id="istamp5" class="stamp5 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp6 -->
-          <img id="istamp6" class="stamp6 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <!-- stamp7 -->
-          <img id="istamp7" class="stamp7 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp8 -->
-          <img id="istamp8" class="stamp8 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp9 -->
-          <img id="istamp9" class="stamp9 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp10 -->
-          <img id="istamp10" class="stamp10 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp11 -->
-          <img id="istamp11" class="stamp11 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp12 -->
-          <img id="istamp12" class="stamp12 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <!-- stamp13 -->
-          <img id="istamp13" class="stamp13 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp14 -->
-          <img id="istamp14" class="stamp14 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp15 -->
-          <img id="istamp15" class="stamp15 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp16 -->
-          <img id="istamp16" class="stamp16 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp17 -->
-          <img id="istamp17" class="stamp17 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp18 -->
-          <img id="istamp18" class="stamp18 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <!-- stamp19 -->
-          <img id="istamp19" class="stamp19 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp20 -->
-          <img id="istamp20" class="stamp20 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp21 -->
-          <img id="istamp21" class="stamp21 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp22 -->
-          <img id="istamp22" class="stamp22 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp23 -->
-          <img id="istamp23" class="stamp23 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp24 -->
-          <img id="istamp24" class="stamp24 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <!-- stamp25 -->
-          <img id="istamp25" class="stamp25 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp26 -->
-          <img id="istamp26" class="stamp26 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp27 -->
-          <img id="istamp27" class="stamp27 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp28 -->
-          <img id="istamp28" class="stamp28 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp29 -->
-          <img id="istamp29" class="stamp29 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp30 -->
-          <img id="istamp30" class="stamp30 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <!-- stamp31 -->
-          <img id="istamp31" class="stamp31 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp32 -->
-          <img id="istamp32" class="stamp32 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp33 -->
-          <img id="istamp33" class="stamp33 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp34 -->
-          <img id="istamp34" class="stamp34 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp35 -->
-          <img id="istamp35" class="stamp35 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-        <td>
-          <!-- stamp36 -->
-          <img id="istamp36" class="stamp36 st" src="../../image/stamprally/Notstamps.png">
-        </td>
-      </tr>
-    </table>
+  <table width="300" class="stamp">
+    <tr>
+      <td>
+        <!-- stamp1 -->
+        <img id="istamp1" class="stamp1 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp2 -->
+        <img id="istamp2" class="stamp2 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp3 -->
+        <img id="istamp3" class="stamp3 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp4 -->
+        <img id="istamp4" class="stamp4 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp5 -->
+        <img id="istamp5" class="stamp5 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp6 -->
+        <img id="istamp6" class="stamp6 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- stamp7 -->
+        <img id="istamp7" class="stamp7 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp8 -->
+        <img id="istamp8" class="stamp8 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp9 -->
+        <img id="istamp9" class="stamp9 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp10 -->
+        <img id="istamp10" class="stamp10 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp11 -->
+        <img id="istamp11" class="stamp11 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp12 -->
+        <img id="istamp12" class="stamp12 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- stamp13 -->
+        <img id="istamp13" class="stamp13 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp14 -->
+        <img id="istamp14" class="stamp14 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp15 -->
+        <img id="istamp15" class="stamp15 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp16 -->
+        <img id="istamp16" class="stamp16 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp17 -->
+        <img id="istamp17" class="stamp17 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp18 -->
+        <img id="istamp18" class="stamp18 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- stamp19 -->
+        <img id="istamp19" class="stamp19 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp20 -->
+        <img id="istamp20" class="stamp20 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp21 -->
+        <img id="istamp21" class="stamp21 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp22 -->
+        <img id="istamp22" class="stamp22 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp23 -->
+        <img id="istamp23" class="stamp23 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp24 -->
+        <img id="istamp24" class="stamp24 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- stamp25 -->
+        <img id="istamp25" class="stamp25 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp26 -->
+        <img id="istamp26" class="stamp26 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp27 -->
+        <img id="istamp27" class="stamp27 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp28 -->
+        <img id="istamp28" class="stamp28 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp29 -->
+        <img id="istamp29" class="stamp29 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp30 -->
+        <img id="istamp30" class="stamp30 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- stamp31 -->
+        <img id="istamp31" class="stamp31 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp32 -->
+        <img id="istamp32" class="stamp32 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp33 -->
+        <img id="istamp33" class="stamp33 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp34 -->
+        <img id="istamp34" class="stamp34 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp35 -->
+        <img id="istamp35" class="stamp35 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+      <td>
+        <!-- stamp36 -->
+        <img id="istamp36" class="stamp36 st" src="../../image/stamprally/Notstamps.png">
+      </td>
+    </tr>
+  </table>
 
-    <!-- javascriptリンク -->
-    <script type="text/javascript" src="../javascript/stamprally/stamprallytop.js"></script>
-    <!-- css -->
-    <style>
+  <!-- javascriptリンク -->
+  <script type="text/javascript" src="../javascript/stamprally/stamprallytop.js"></script>
+  <!-- css -->
+  <style>
     .goukei {
-      text-align: right;
-      padding-right: 15vw;
-      font-size: 2vw;
-      padding: 0.5em;/*文字周りの余白*/
-      color: #ffffff;/*文字色*/
-      background: #5fb9a6;/*背景色*/
-      border-left: solid 5px #d0ffe0;/*左線（実線 太さ 色）*/
+      font-size: 16pt;
+      padding: 0.5em;
+      /*文字周りの余白*/
+      color: #ffffff;
+      /*文字色*/
+      background: #5fb9a6;
+      /*背景色*/
+      border-left: solid 5px #d0ffe0;
+      /*左線（実線 太さ 色）*/
       text-align: center;
-}
+      justify-content: center;
+    }
 
     td {
       text-align: center;
+      width: 350px;
+
     }
+
     .stamp {
       margin-left: auto;
       margin-right: auto;
-      width: 80%;
+      width: 60%;
     }
+
     .stamp img {
-      padding: 2vw 1vw;
+      padding: 1pt 1pt;
     }
+
+    .table {
+      display: table;
+      border-collapse: separate;
+      box-sizing: border-box;
+      text-indent: initial;
+      border-spacing: 2px;
+      width: 350px;
+      border-color: grey;
+    }
+
     .st {
       height: 10vw;
+      width: 10vw;
       /* 以下の記述は写真を保存できなくするためのアクセス制限 */
       pointer-events: none;
-      -webkit-touch-callout:none;
-      -webkit-user-select:none;
-      -moz-touch-callout:none;
-      -moz-user-select:none;
-      touch-callout:none;
-      user-select:none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-touch-callout: none;
+      -moz-user-select: none;
+      touch-callout: none;
+      user-select: none;
       /* ここまでアクセス制限 */
     }
-    </style>
-  </body>
-</html>
+  </style>
+  <!-- stampbutton -->
+  <script src="https://kit.fontawesome.com/efdc94b2ee.js" crossorigin="anonymous"></script>
+  <p class="pagetop" style="display: block;">
+    <a href="stamprallytop.html">
+      <i class="fa-solid fa-stamp"></i>
+    </a>
+  </p>
+  <!-- stampbutton -->
+  <p class="pagemap" style="display: block;">
+    <a href="../../page/html/map.html">
+      <i class="fa-solid fa-map-location-dot"></i>
+    </a>
+  </p>
+  <style>
+    /* stampボタンCSS */
+    .pagetop {
+      display: none;
+      position: fixed;
+      right: 15px;
+      bottom: 60px;
+    }
+
+    .pagetop a {
+      display: block;
+      font-size: 0;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      background: #3fb821;
+      border-radius: 50%;
+      line-height: 50px;
+    }
+
+    .pagetop a i {
+      font-size: 20px;
+      color: #fff;
+      line-height: 50px;
+    }
+
+    /* stampボタンCSS */
+    .pagemap {
+      display: none;
+      position: fixed;
+      left: 15px;
+      bottom: 60px;
+    }
+
+    .pagemap a {
+      display: block;
+      font-size: 0;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      background: #3fb821;
+      border-radius: 50%;
+      line-height: 50px;
+    }
+
+    .pagemap a i {
+      font-size: 20px;
+      color: #fff;
+      line-height: 50px;
+    }
+  </style>
+</body>
